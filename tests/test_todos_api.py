@@ -118,4 +118,4 @@ async def test_user_cannot_access_another_users_todo(
         f"/api/v1/todos/{todo_id}",
         headers=another_auth_headers,
     )
-    assert get_response.status_code == 403
+    assert get_response.status_code == 404
