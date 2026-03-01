@@ -27,6 +27,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 async def init_db() -> None:
     # Ensure model modules are imported so SQLModel metadata is populated.
     import app.models.todo  # noqa: F401
+    import app.models.user  # noqa: F401
 
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
