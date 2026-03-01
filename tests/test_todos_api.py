@@ -122,6 +122,16 @@ async def test_todo_endpoints_require_authentication(client: AsyncClient) -> Non
 
 
 @pytest.mark.asyncio
+async def test_todos_rejects_malformed_bearer_token(client: AsyncClient) -> None:
+    response = await client.get(
+        "/api/v1/todos/",
+        headers={"Authorization": "Bearer not-a-valid-jwt"},
+    )
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Invalid token"
+
+
+@pytest.mark.asyncio
 async def test_user_cannot_access_another_users_todo(
     client: AsyncClient,
     auth_headers: dict[str, str],
