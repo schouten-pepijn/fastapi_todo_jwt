@@ -8,6 +8,7 @@ from app.core.config import settings
 
 import app.models.todo  # noqa: F401
 import app.models.user  # noqa: F401
+import app.models.refresh_session  # noqa: F401
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
