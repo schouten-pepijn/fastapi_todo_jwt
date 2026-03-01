@@ -25,13 +25,11 @@ app = FastAPI(
 app.include_router(
     authentication.router,
     prefix="/api/v1",
-    tags=["authentication"],
 )
 
 app.include_router(
     todos.router,
     prefix="/api/v1/todos",
-    tags=["todos"],
 )
 
 

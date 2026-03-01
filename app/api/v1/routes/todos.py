@@ -9,7 +9,7 @@ from app.models.user import User
 from app.schemas.todo import TodoCreate, TodoRead, TodoUpdate
 from app.api.deps.authentication import get_current_user
 
-router = APIRouter()
+router = APIRouter(tags=["todos"])
 
 
 def _require_user_id(user: User) -> int:
