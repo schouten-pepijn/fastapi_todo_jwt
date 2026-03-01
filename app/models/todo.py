@@ -13,7 +13,5 @@ class Todo(SQLModel, table=True):
     completed: bool = Field(default=False)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    owner_id: int | None = Field(
-        default=None, foreign_key="user.id", index=True, nullable=True
-    )
+    owner_id: int = Field(foreign_key="user.id", index=True, nullable=False)
     owner: "User" = Relationship(back_populates="todos")
