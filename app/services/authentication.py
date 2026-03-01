@@ -51,6 +51,7 @@ def create_refresh_token(subject: str) -> str:
 
 
 def decode_token(token: str, token_type: str) -> Dict[str, Any]:
+    """Decode a JWT token and validate its claims."""
     try:
         return jwt.decode(
             token,

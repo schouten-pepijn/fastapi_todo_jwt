@@ -19,7 +19,7 @@ if str(PROJECT_ROOT) not in sys.path:
 import app.models.todo  # noqa: F401
 import app.models.user  # noqa: F401
 from app.api.v1.routes import todos
-from app.db.database import get_db
+from app.db.database import get_session
 
 
 @pytest_asyncio.fixture
@@ -42,7 +42,7 @@ async def test_app(tmp_path: Path) -> AsyncGenerator[FastAPI, None]:
 
     app = FastAPI()
     app.include_router(todos.router, prefix="/api/v1/todos", tags=["todos"])
-    app.dependency_overrides[get_db] = override_get_db
+    app.dependency_overrides[get_session] = override_get_db
 
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)

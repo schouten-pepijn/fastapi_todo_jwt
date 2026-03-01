@@ -3,7 +3,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.crud.user import get_user_by_id
-from app.db.database import get_db
+from app.db.database import get_session
 from app.services.authentication import decode_token
 
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -11,7 +11,7 @@ bearer_scheme = HTTPBearer(auto_error=False)
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
-    session: AsyncSession = Depends(get_db),
+    session: AsyncSession = Depends(get_session),
 ):
     if credentials is None:
         raise HTTPException(
