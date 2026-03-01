@@ -17,6 +17,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 import app.models.todo  # noqa: F401
+import app.models.user  # noqa: F401
 from app.api.v1.routes import todos
 from app.db.database import get_db
 
@@ -57,5 +58,7 @@ async def test_app(tmp_path: Path) -> AsyncGenerator[FastAPI, None]:
 @pytest_asyncio.fixture
 async def client(test_app: FastAPI) -> AsyncGenerator[AsyncClient, None]:
     transport = ASGITransport(app=test_app)
-    async with AsyncClient(transport=transport, base_url="http://testserver") as async_client:
+    async with AsyncClient(
+        transport=transport, base_url="http://testserver"
+    ) as async_client:
         yield async_client
