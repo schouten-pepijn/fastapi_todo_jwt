@@ -1,31 +1,41 @@
-version: '3'
+version: "3"
 
 tasks:
   run-uvicorn:
+    aliases: ["app-dev"]
     cmds:
-      - uv run uvicorn app.main:app --reload
-    desc: Run the FastAPI application with Uvicorn in development mode.
+      - uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+    desc: Run FastAPI in development mode.
 
   run-uvicorn-prod:
+    aliases: ["app-prod"]
     cmds:
-      - uv run uvicorn app.main:app --host
+      - uv run uvicorn app.main:app --host 0.0.0.0 --port 8000
+    desc: Run FastAPI with production-like Uvicorn settings (no reload).
 
-  init-alembic:
+  db-upgrade:
+    aliases: ["db-migrate"]
     cmds:
-      - uv run alembic init alembic
-    desc: Initialize Alembic for database migrations.
+      - uv run alembic upgrade head
+    desc: Apply all pending Alembic migrations.
 
-  test-migrations:
+  db-downgrade:
     cmds:
-      - uv run alembic revision --autogenerate -m "Test migration"
-    desc: Create a test migration to verify Alembic setup.
+      - uv run alembic downgrade -1
+    desc: Roll back the latest Alembic migration.
 
-  test-auth:
+  db-current:
     cmds:
-      - uv run python -c "from app.services.authentication import hash_password, verify_password; p='A'*120; h=hash_password(p); print(verify_password(p,h))"
-    desc: Run tests related to authentication.
+      - uv run alembic current
+    desc: Show the currently applied Alembic revision.
+
+  db-history:
+    cmds:
+      - uv run alembic history --verbose
+    desc: Show Alembic migration history.
 
   run-pytest:
+    aliases: ["test"]
     cmds:
       - uv run pytest -v
     desc: Run all tests with pytest in verbose mode.
