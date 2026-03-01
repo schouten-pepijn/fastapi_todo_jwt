@@ -14,10 +14,15 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 # Keep test imports resilient when no local .env exists.
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./test_bootstrap.db")
 os.environ.setdefault("JWT_SECRET", "test-jwt-secret")
+os.environ.setdefault(
+    "REFRESH_TOKEN_PEPPER",
+    "test-refresh-token-pepper-at-least-32-chars",
+)
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+import app.models.refresh_session  # noqa: F401
 import app.models.todo  # noqa: F401
 import app.models.user  # noqa: F401
 from app.api.v1.routes import authentication, todos
