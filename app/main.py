@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.api.v1.routes import todos
+from app.api.v1.routes import authentication, todos
 from app.core.config import settings
 from app.db.database import init_db
 
@@ -13,12 +13,19 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     await init_db()
     yield
 
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version="0.0.1",
     docs_url="/docs",
     openapi_url="/openapi.json",
     lifespan=lifespan,
+)
+
+app.include_router(
+    authentication.router,
+    prefix="/api/v1",
+    tags=["authentication"],
 )
 
 app.include_router(
