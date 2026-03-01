@@ -1,0 +1,13 @@
+version: '3'
+
+tasks:
+  run-uvicorn:
+    cmds:
+      - uv run uvicorn app.main:app --reload
+    desc: Run the FastAPI application with Uvicorn in development mode.
+
+  run-uvicorn-prod:
+    cmds:
+      - uv run uvicorn app.main:app --host
+
+
