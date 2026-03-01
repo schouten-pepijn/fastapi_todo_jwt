@@ -32,3 +32,17 @@ async def register(
         hashed_password=hash_password(payload.password),
     )
     return UserRead(id=user.id, email=user.email, is_active=user.is_active)
+
+
+@router.post("/login", response_model=TokenPair)
+async def login(payload: LoginRequest, session: AsyncSession = Depends(get_session)):
+    user = await get_user_by_email(session, payload.email)
+    if not user or not verify_password(payload.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
+        )
+
+    return TokenPair(
+        access_token=create_access_token(str(user.id)),
+        refresh_token=create_refresh_token(str(user.id)),
+    )
