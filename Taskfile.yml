@@ -10,4 +10,9 @@ tasks:
     cmds:
       - uv run uvicorn app.main:app --host
 
+  init-alembic:
+    cmds:
+      - uv run alembic init alembic
+    desc: Initialize Alembic for database migrations.
+
 

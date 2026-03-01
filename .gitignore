@@ -12,5 +12,11 @@ wheels/
 # Environment file
 .env
 
-# database files
+# Alembic / Python cache
+alembic/__pycache__/
+alembic/versions/__pycache__/
+*.pyc
+
+# Local DB files
 *.db
+*.sqlite3
