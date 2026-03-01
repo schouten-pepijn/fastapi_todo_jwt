@@ -15,4 +15,12 @@ tasks:
       - uv run alembic init alembic
     desc: Initialize Alembic for database migrations.
 
+  test-migrations:
+    cmds:
+      - uv run alembic revision --autogenerate -m "Test migration"
+    desc: Create a test migration to verify Alembic setup.
 
+  test-auth:
+    cmds:
+      - uv run python -c "from app.services.authentication import hash_password, verify_password; p='A'*120; h=hash_password(p); print(verify_password(p,h))"
+    desc: Run tests related to authentication.
