@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import List
 
-from app.crud.todo import create_todo, delete_todo, get_todo, update_todo
+from app.crud.todo import create_todo, delete_todo, get_todo, get_todos, update_todo
 from app.db.database import get_session
 from app.models.todo import Todo
 from app.models.user import User
@@ -28,9 +27,7 @@ async def list_todos(
     current_user: User = Depends(get_current_user),
 ):
     user_id = _require_user_id(current_user)
-    result = await session.exec(select(Todo).where(Todo.owner_id == user_id))
-
-    return result.all()
+    return await get_todos(session, owner_id=user_id)
 
 
 @router.post("/", response_model=TodoRead, status_code=201)
@@ -52,13 +49,9 @@ async def get_todo_by_id(
     current_user: User = Depends(get_current_user),
 ):
     user_id = _require_user_id(current_user)
-    todo = await get_todo(session, todo_id)
+    todo = await get_todo(session, todo_id=todo_id, owner_id=user_id)
     if todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
-    if todo.owner_id != user_id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to access this todo"
-        )
 
     return todo
 
@@ -71,13 +64,9 @@ async def update_todo_by_id(
     current_user: User = Depends(get_current_user),
 ):
     user_id = _require_user_id(current_user)
-    todo = await get_todo(session, todo_id)
+    todo = await get_todo(session, todo_id=todo_id, owner_id=user_id)
     if todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
-    if todo.owner_id != user_id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to access this todo"
-        )
 
     return await update_todo(session, todo, todo_in)
 
@@ -89,13 +78,9 @@ async def delete_todo_by_id(
     current_user: User = Depends(get_current_user),
 ):
     user_id = _require_user_id(current_user)
-    todo = await get_todo(session, todo_id)
+    todo = await get_todo(session, todo_id=todo_id, owner_id=user_id)
     if todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
-    if todo.owner_id != user_id:
-        raise HTTPException(
-            status_code=403, detail="Not authorized to access this todo"
-        )
 
     await delete_todo(session, todo)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
