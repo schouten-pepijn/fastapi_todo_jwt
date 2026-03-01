@@ -46,3 +46,12 @@ async def login(payload: LoginRequest, session: AsyncSession = Depends(get_sessi
         access_token=create_access_token(str(user.id)),
         refresh_token=create_refresh_token(str(user.id)),
     )
+
+
+@router.get("/me", response_model=UserRead)
+async def me(current_user=Depends(get_current_user)):
+    return UserRead(
+        id=current_user.id,
+        email=current_user.email,
+        is_active=current_user.is_active,
+    )
