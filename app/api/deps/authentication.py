@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jose import JWTError
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.crud.user import get_user_by_id
@@ -20,7 +21,7 @@ async def get_current_user(
 
     try:
         payload = decode_token(credentials.credentials, token_type="access")
-    except ValueError:
+    except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
         )
