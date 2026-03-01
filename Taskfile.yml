@@ -1,6 +1,26 @@
 version: "3"
 
 tasks:
+  db-start:
+    cmds:
+      - docker compose up -d postgres
+    desc: Start local PostgreSQL container.
+
+  db-stop:
+    cmds:
+      - docker compose stop postgres
+    desc: Stop local PostgreSQL container.
+
+  db-down:
+    cmds:
+      - docker compose down
+    desc: Stop and remove local Docker Compose resources.
+
+  db-logs:
+    cmds:
+      - docker compose logs -f postgres
+    desc: Follow PostgreSQL logs.
+
   run-uvicorn:
     aliases: ["app-dev"]
     cmds:
@@ -17,7 +37,7 @@ tasks:
     aliases: ["db-migrate"]
     cmds:
       - uv run alembic upgrade head
-    desc: Apply all pending Alembic migrations.
+    desc: Apply all pending Alembic migrations to PostgreSQL.
 
   db-downgrade:
     cmds:
@@ -39,3 +59,12 @@ tasks:
     cmds:
       - uv run pytest -v
     desc: Run all tests with pytest in verbose mode.
+
+  run-dev:
+    cmds:
+      - uv sync --dev
+      - task db-start
+      - task db-upgrade
+      - task run-uvicorn
+    desc: Run the application in development mode, ensuring the database is up to date.
+      
