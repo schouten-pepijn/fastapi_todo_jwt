@@ -19,8 +19,9 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
-    "httpx>=0.28.1",
-    "pytest>=8.4.1",
-    "pytest-asyncio>=1.2.0",
+dev = ["httpx>=0.28.1", "pytest>=8.4.1", "pytest-asyncio>=1.2.0"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore:Accessing argon2.__version__ is deprecated.*:DeprecationWarning:passlib.handlers.argon2",
 ]
