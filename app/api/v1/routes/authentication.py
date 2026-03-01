@@ -4,7 +4,6 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from app.api.deps.authentication import get_current_user
 from app.crud.user import get_user_by_email, create_user
 from app.db.database import get_session
-from app.schemas.user import UserCreate, UserRead
 from app.schemas.authentication import LoginRequest, TokenPair
 from app.schemas.user import UserRead, UserCreate
 from app.services.authentication import (
@@ -15,6 +14,15 @@ from app.services.authentication import (
 )
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
+
+
+def to_user_read(user) -> UserRead:
+    if user.id is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="User ID was not generated",
+        )
+    return UserRead(id=user.id, email=user.email, is_active=user.is_active)
 
 
 @router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
@@ -31,7 +39,7 @@ async def register(
         email=payload.email,
         hashed_password=hash_password(payload.password),
     )
-    return UserRead(id=user.id, email=user.email, is_active=user.is_active)
+    return to_user_read(user)
 
 
 @router.post("/login", response_model=TokenPair)
@@ -42,16 +50,14 @@ async def login(payload: LoginRequest, session: AsyncSession = Depends(get_sessi
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
         )
 
+    user_read = to_user_read(user)
+
     return TokenPair(
-        access_token=create_access_token(str(user.id)),
-        refresh_token=create_refresh_token(str(user.id)),
+        access_token=create_access_token(str(user_read.id)),
+        refresh_token=create_refresh_token(str(user_read.id)),
     )
 
 
 @router.get("/me", response_model=UserRead)
 async def me(current_user=Depends(get_current_user)):
-    return UserRead(
-        id=current_user.id,
-        email=current_user.email,
-        is_active=current_user.is_active,
-    )
+    return to_user_read(current_user)
