@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "FastAPI To-Do"
     DATABASE_URL: str = ""
     JWT_SECRET: str = ""
+    REFRESH_TOKEN_PEPPER: str = ""
+
     DEBUG: bool = True
 
     # JWT settings
@@ -35,6 +37,15 @@ class Settings(BaseSettings):
     def validate_jwt_secret(cls, value: str) -> str:
         if not value or not value.strip():
             raise ValueError("JWT_SECRET must be set in environment or .env")
+        return value
+
+    @field_validator("REFRESH_TOKEN_PEPPER")
+    @classmethod
+    def validate_refresh_token_pepper(cls, value: str) -> str:
+        if not value or not value.strip():
+            raise ValueError("REFRESH_TOKEN_PEPPER must be set in environment or .env")
+        if len(value) < 32:
+            raise ValueError("REFRESH_TOKEN_PEPPER must be at least 32 characters long")
         return value
 
     @field_validator("JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
